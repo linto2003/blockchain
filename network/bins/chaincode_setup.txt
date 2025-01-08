@@ -1,0 +1,14 @@
+ export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+source ~/.bashrc
+mkdir -p $GOPATH/src/github.com/linto/Project_new
+cd $GOPATH/src/github.com/linto/Project_new
+go mod init github.com/linto/Project_new
+go get github.com/hyperledger/fabric-chaincode-go/shim
+go get github.com/hyperledger/fabric-protos-go/peer
+
+cd /home/linto/Project_new/network/chaincode
+go get github.com/hyperledger/fabric-chaincode-go/shim
+go get github.com/hyperledger/fabric-protos-go/peer
+go mod tidy
+go build
