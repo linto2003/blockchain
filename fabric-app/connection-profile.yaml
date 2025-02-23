@@ -1,20 +1,7 @@
 name: "fabric-network"
 version: "1.0.0"
-client:
-  organization: Hospital
-  connection:
-    timeout:
-      peer:
-        endorser: 300
+
 organizations:
-  Hospital:
-    mspid: HospitalMSP
-    peers:
-      - peer1.hospital.com
-  Customer:
-    mspid: CustomerMSP
-    peers:
-      - peer1.customer.com
   Pharmacy:
     mspid: PharmacyMSP
     peers:
@@ -23,95 +10,36 @@ organizations:
     mspid: DeliveryMSP
     peers:
       - peer1.delivery.com
+  Hospital:
+    mspid: HospitalMSP
+    peers:
+      - peer1.hospital.com
+
 peers:
-  peer1.hospital.com:
-    url: grpcs://peer1.hospital.com:7051
-    tlsCACerts:
-      pem: | 
-          -----BEGIN CERTIFICATE-----
-          MIICSDCCAe6gAwIBAgIRAJyGxjyVIqlX8CNK3C9qRgwwCgYIKoZIzj0EAwIwbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDGhvc3BpdGFsLmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          aG9zcGl0YWwuY29tMB4XDTI1MDEwMzE5MjcwMFoXDTM1MDEwMTE5MjcwMFowbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDGhvc3BpdGFsLmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          aG9zcGl0YWwuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEC1pxng72Qa+h
-          HYu4D+SDhkkIY1LlpqJj3Beel48WWmtblcE0FV7vcj9dAnwg98X78aP4Ix6ZNTHh
-          AfcnPIVUOKNtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMC
-          BggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCDvh3ZDWUDOJ9wc
-          dFK1XmLBdsKLdJDPwCGbEmN7i5oHUTAKBggqhkjOPQQDAgNIADBFAiALyifJ4EMM
-          np1wHv+0yAW6+7aYwMY557eA9YU733uzpAIhAJENBb1/ICWRZay54zYnkt4/QZc+
-          8GIu6l1to70OZDqm
-          -----END CERTIFICATE-----
-    grpcOptions:
-      ssl-target-name-override: peer1.hospital.com
-      hostnameOverride: peer1.hospital.com
-  peer1.customer.com:
-    url: grpcs://peer1.customer.com:7051
-    tlsCACerts:
-      pem: |
-          -----BEGIN CERTIFICATE-----
-          MIICSDCCAe6gAwIBAgIRAIdNFwi8ukBloaXIGfkgHkEwCgYIKoZIzj0EAwIwbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDGN1c3RvbWVyLmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          Y3VzdG9tZXIuY29tMB4XDTI1MDEwMzE5MjcwMFoXDTM1MDEwMTE5MjcwMFowbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDGN1c3RvbWVyLmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          Y3VzdG9tZXIuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4aKqmfS1YCyS
-          j4tNJwZg+dfgfKZYdzMtOJxJ+D9azM0ED1EtuoEGK0js/6wWz8JSG2mzUzf57rKz
-          3zZX5hoQaaNtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMC
-          BggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCBQp/AL5XXSiNmw
-          YGvkXnuH9165Bv1nvNHxsft8OiQoYTAKBggqhkjOPQQDAgNIADBFAiEAkwWenFzz
-          VUSI89tBdi3HslgbI0jcYEltsj1cnhEdNlcCIH94TU5NlJK9eOctuo18sLgOACWH
-          leu4vpZM1Qdz2pev
-          -----END CERTIFICATE-----
-    grpcOptions:
-      ssl-target-name-override: peer1.customer.com
-      hostnameOverride: peer1.customer.com
   peer1.pharmacy.com:
-    url: grpcs://peer1.pharmacy.com:7051
+    url: grpcs://peer1.pharmacy.com:9051
     tlsCACerts:
-      pem: |
-          -----BEGIN CERTIFICATE-----
-          MIICRzCCAe6gAwIBAgIRAMr78llQ00VvDD2g541n7agwCgYIKoZIzj0EAwIwbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDHBoYXJtYWN5LmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          cGhhcm1hY3kuY29tMB4XDTI1MDEwMzE5MjcwMFoXDTM1MDEwMTE5MjcwMFowbjEL
-          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
-          cmFuY2lzY28xFTATBgNVBAoTDHBoYXJtYWN5LmNvbTEbMBkGA1UEAxMSdGxzY2Eu
-          cGhhcm1hY3kuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJkbFkv+O407I
-          mpEyZQ9hASYRtX5rOsgHxFNh88pNeQwLSyNIcA92AkaNlx7zKIED0l7/UPZfZe65
-          EX9jjCyAw6NtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMC
-          BggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCDAB+l1gL3Oum9e
-          fxspC9TFKgSOIuEfEH4hH81RR8Ze/TAKBggqhkjOPQQDAgNHADBEAiAlujWNdrZB
-          wGVZeG5aXi4YPcSa2ird/Qgk8tydYxBvqwIgWeOAezcRRijhvaw7k6kqixaVXazW
-          KitA81DyDycCkhs=
-          -----END CERTIFICATE-----
+      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/pharmacy.com/peers/peer1.pharmacy.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: peer1.pharmacy.com
       hostnameOverride: peer1.pharmacy.com
+
   peer1.delivery.com:
-    url: grpcs://peer1.delivery.com:7051
+    url: grpcs://peer1.delivery.com:10051
     tlsCACerts:
-      pem: |
-          -----BEGIN CERTIFICATE-----
-          MIICRjCCAe2gAwIBAgIQa3WVfawsxsuWNKAJ+TWffjAKBggqhkjOPQQDAjBuMQsw
-          CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
-          YW5jaXNjbzEVMBMGA1UEChMMZGVsaXZlcnkuY29tMRswGQYDVQQDExJ0bHNjYS5k
-          ZWxpdmVyeS5jb20wHhcNMjUwMTAzMTkyNzAwWhcNMzUwMTAxMTkyNzAwWjBuMQsw
-          CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
-          YW5jaXNjbzEVMBMGA1UEChMMZGVsaXZlcnkuY29tMRswGQYDVQQDExJ0bHNjYS5k
-          ZWxpdmVyeS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASZubZ6H0btZRHo
-          GfHsElVpX/bcxZeuY+JZ1wwp54BS44emUP2/dR5kYE6LA9SkW78SrbKJniciNqa8
-          pOUp8HuQo20wazAOBgNVHQ8BAf8EBAMCAaYwHQYDVR0lBBYwFAYIKwYBBQUHAwIG
-          CCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEINEWvmK3hzRvA8i0
-          JdAKmggMwqvVXP7Mg1KPCk6JPCBzMAoGCCqGSM49BAMCA0cAMEQCIG1AqZPPckbw
-          989j0mJOQbthmFMpJks0emNlKKy2aibgAiAApDZJgwgWc4LYVi7Uxqm85pK5RCvE
-          dKzd4BDhZUVKbw==
-          -----END CERTIFICATE-----
+      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/delivery.com/peers/peer1.delivery.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: peer1.delivery.com
       hostnameOverride: peer1.delivery.com
+
+  peer1.hospital.com:
+    url: grpcs://peer1.hospital.com:7051
+    tlsCACerts:
+      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/hospital.com/peers/peer1.hospital.com/tls/ca.crt
+    grpcOptions:
+      ssl-target-name-override: peer1.hospital.com
+      hostnameOverride: peer1.hospital.com
+
 orderers:
   orderer.hospital.com:
     url: grpcs://orderer.hospital.com:7050
@@ -120,28 +48,35 @@ orderers:
     grpcOptions:
       ssl-target-name-override: orderer.hospital.com
       hostnameOverride: orderer.hospital.com
-channels:
-  medlinechannel:
-    orderers:
-      - orderer.hospital.com
-    peers:
-      peer1.hospital.com:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
-      peer1.customer.com:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
-      peer1.pharmacy.com:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
-      peer1.delivery.com:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
+
+  # orderer2.hospital.com:
+  #   url: grpcs://orderer2.hospital.com:7050
+  #   tlsCACerts:
+  #     path: /home/linto/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer2.hospital.com/tls/ca.crt
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer2.hospital.com
+  #     hostnameOverride: orderer2.hospital.com
+
+  # orderer3.hospital.com:
+  #   url: grpcs://orderer3.hospital.com:7050
+  #   tlsCACerts:
+  #     path: /home/linto/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer3.hospital.com/tls/ca.crt
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer3.hospital.com
+  #     hostnameOverride: orderer3.hospital.com
+
+  # orderer4.hospital.com:
+  #   url: grpcs://orderer4.hospital.com:7050
+  #   tlsCACerts:
+  #     path: /home/linto/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer4.hospital.com/tls/ca.crt
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer4.hospital.com
+  #     hostnameOverride: orderer4.hospital.com
+
+  # orderer5.hospital.com:
+  #   url: grpcs://orderer5.hospital.com:7050
+  #   tlsCACerts:
+  #     path: /home/linto/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer5.hospital.com/tls/ca.crt
+  #   grpcOptions:
+  #     ssl-target-name-override: orderer5.hospital.com
+  #     hostnameOverride: orderer5.hospital.com

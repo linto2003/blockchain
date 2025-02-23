@@ -52,7 +52,8 @@ export ORDERER_ADDRESS=orderer.hospital.com:7050
 if [ "$2" == "tls" ] || [ "$2" == "raft" ] ; then
 
     export ORDERER_CA_ROOTFILE=$PWD/crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/msp/tlscacerts/tlsca.hospital.com-cert.pem
-
+    export CORE_PEER_TLS_CERT_FILE=$PWD/crypto-config/peerOrganizations/$1.com/peers/peer1.$1.com/tls/server.crt
+    export CORE_PEER_TLS_KEY_FILE=$PWD/crypto-config/peerOrganizations/$1.com/peers/peer1.$1.com/tls/server.key
     export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/crypto-config/peerOrganizations/$1.com/peers/peer1.$1.com/tls/ca.crt
 
     export CORE_PEER_TLS_ENABLED=true
@@ -63,7 +64,7 @@ fi
 
 ### Introduced in Fabric 2.x update
 ### Test Chaincode related properties
-export CC_CONSTRUCTOR='{"Args":["init","a","100","b","200"]}'
+export CC_CONSTRUCTOR='{"Args":["InitLedger"]}'
 export CC_NAME="gocc1"
 export CC_PATH="github.com/linto/Project_new"
 export CC_VERSION="1.0"

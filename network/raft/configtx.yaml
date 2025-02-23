@@ -1,0 +1,399 @@
+# 2.x
+# Docker Configtx
+# Sets up the 3 orgs in the network
+
+#   CAPABILITIES
+Capabilities:
+  Application: &ApplicationCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+# ORGANIZATIONS
+Organizations:
+  - &Orderer
+    Name: Orderer
+    ID: OrdererMSP
+    MSPDir: ./crypto-config/ordererOrganizations/hospital.com/msp
+    # Policies are mandatory starting 2.x
+    Policies: &OrdererPolicies
+      Readers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+      Writers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+      Admins:
+          Type: Signature
+          # ONLY Admin Role can carry out administration activities
+          Rule: "OR('OrdererMSP.admin')"
+      Endorsement:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+
+  - &Hospital
+    Name: Hospital
+    ID: HospitalMSP
+    MSPDir: ./crypto-config/peerOrganizations/hospital.com/msp
+    Policies: &HospitalPolicies
+      Readers:
+          Type: Signature
+          # Any member can READ e.g., query
+          Rule: "OR('HospitalMSP.admin', 'HospitalMSP.peer', 'HospitalMSP.client')"
+      Writers:
+          Type: Signature
+          # Any member can WRITE e.g., submit transaction
+          Rule: "OR('HospitalMSP.member')"
+      Admins:
+          Type: Signature
+          # Either Acme admin OR Orderer Admin can carry out admin activities
+          Rule: "OR('HospitalMSP.admin','OrdererMSP.admin')"
+      Endorsement:
+          Type: Signature
+          # Any member can act as an endorser
+          Rule: "OR('HospitalMSP.member')"
+    AnchorPeers:
+      - Host: peer1.hospital.com
+        Port: 7051
+
+  - &Customer
+    Name: Customer
+    ID: CustomerMSP
+    MSPDir: ./crypto-config/peerOrganizations/customer.com/msp
+    Policies: &CustomerPolicies
+      Readers:
+          Type: Signature
+          # Any member
+          Rule: "OR('CustomerMSP.member')"
+      Writers:
+          Type: Signature
+          # Any member
+          Rule: "OR('CustomerMSP.member')"
+      Admins:
+          Type: Signature
+          # BOTH Budget Admin AND Orderer Admin needed for admin activities
+          Rule: "OR('CustomerMSP.member')"
+      Endorsement:
+          Type: Signature
+          Rule: "OR('CustomerMSP.member')"
+    AnchorPeers:
+      - Host: peer1.customer.com
+        Port: 8051
+
+  - &Pharmacy
+    Name: Pharmacy
+    ID: PharmacyMSP
+    MSPDir: ./crypto-config/peerOrganizations/pharmacy.com/msp
+    Policies: &PharmacyPolicies
+      Readers:
+          Type: Signature
+          # Any member
+          Rule: "OR('PharmacyMSP.member')"
+      Writers:
+          Type: Signature
+          # Any member
+          Rule: "OR('PharmacyMSP.member')"
+      Admins:
+          Type: Signature
+          # BOTH Budget Admin AND Orderer Admin needed for admin activities
+          Rule: "OR('PharmacyMSP.member')"
+      Endorsement:
+          Type: Signature
+          Rule: "OR('PharmacyMSP.member')"
+    AnchorPeers:
+      - Host: peer1.pharmacy.com
+        Port: 9051
+
+  - &Delivery
+    Name: Delivery
+    ID: DeliveryMSP
+    MSPDir: ./crypto-config/peerOrganizations/delivery.com/msp
+    Policies: &DeliveryPolicies
+      Readers:
+          Type: Signature
+          # Any member
+          Rule: "OR('DeliveryMSP.member')"
+      Writers:
+          Type: Signature
+          # Any member
+          Rule: "OR('DeliveryMSP.member')"
+      Admins:
+          Type: Signature
+          # BOTH Budget Admin AND Orderer Admin needed for admin activities
+          Rule: "OR('DeliveryMSP.member')"
+      Endorsement:
+          Type: Signature
+          Rule: "OR('DeliveryMSP.member')"
+    AnchorPeers:
+      - Host: peer1.delivery.com
+        Port: 10051
+  
+
+#   ORDERER
+Orderer: &OrdererDefaults
+
+  OrdererType: etcdraft
+
+  Addresses:
+    # UPDATE THE IP ADDRESS
+    - orderer.hospital.com:7050
+    - orderer2.hospital.com:8050
+    - orderer3.hospital.com:9050
+    - orderer4.hospital.com:10050
+    - orderer5.hospital.com:11050
+    
+  # Policies for Orderer
+  Policies:
+    Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+    Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+    Admins:
+        Type: ImplicitMeta  
+        # UPDATED December 15, 2019
+        Rule: "ANY Admins"
+        # Rule: "MAJORITY Admins"
+
+    # BlockValidation specifies what signatures must be included in the block
+    # from the orderer for the peer to validate it.
+    # Starting Fabric 2.x this is REQUIRED
+    BlockValidation:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+
+  EtcdRaft:
+      # The set of Raft replicas for this network. For the etcd/raft-based
+      # implementation, we expect every replica to also be an OSN. Therefore,
+      # a subset of the host:port items enumerated in this list should be
+      # replicated under the Orderer.Addresses key above.
+      Consenters:
+          - Host: orderer.hospital.com
+            Port: 7050
+            # Same cert is being used for client and server - for higher level of security you may use different certs
+            ClientTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/tls/server.crt
+            ServerTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/tls/server.crt
+
+          - Host: orderer2.hospital.com
+            Port: 7050
+            ClientTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer2.hospital.com/tls/server.crt
+            ServerTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer2.hospital.com/tls/server.crt
+
+          - Host: orderer3.hospital.com
+            Port: 7050
+            ClientTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer3.hospital.com/tls/server.crt
+            ServerTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer3.hospital.com/tls/server.crt
+
+          - Host: orderer4.hospital.com
+            Port: 7050
+            ClientTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer4.hospital.com/tls/server.crt
+            ServerTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer4.hospital.com/tls/server.crt
+            
+          - Host: orderer5.hospital.com
+            Port: 7050
+            ClientTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer5.hospital.com/tls/server.crt
+            ServerTLSCert: ./crypto-config/ordererOrganizations/hospital.com/orderers/orderer5.hospital.com/tls/server.crt
+      # Options to be specified for all the etcd/raft nodes. The values here
+      # are the defaults for all new channels and can be modified on a
+      # per-channel basis via configuration updates.
+      Options:
+          # TickInterval is the time interval between two Node.Tick invocations.
+          TickInterval: 500ms
+
+          # ElectionTick is the number of Node.Tick invocations that must pass
+          # between elections. That is, if a follower does not receive any
+          # message from the leader of current term before ElectionTick has
+          # elapsed, it will become candidate and start an election.
+          # ElectionTick must be greater than HeartbeatTick.
+          ElectionTick: 10
+
+          # HeartbeatTick is the number of Node.Tick invocations that must
+          # pass between heartbeats. That is, a leader sends heartbeat
+          # messages to maintain its leadership every HeartbeatTick ticks.
+          HeartbeatTick: 1
+
+          # MaxInflightBlocks limits the max number of in-flight append messages
+          # during optimistic replication phase.
+          MaxInflightBlocks: 5
+
+          # SnapshotIntervalSize defines number of bytes per which a snapshot is taken
+          SnapshotIntervalSize: 20 MB
+  # Batch Timeout: The amount of time to wait before creating a batch
+  BatchTimeout: 2s
+
+  # Batch Size: Controls the number of messages batched into a block
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 98 MB
+    PreferredMaxBytes: 512 KB
+
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Application: &ApplicationDefaults
+
+  ACLs: &ACLsDefault
+    
+    # ACL policy for lscc's "getid" function
+    lscc/ChaincodeExists: /Channel/Application/Readers
+
+    # ACL policy for lscc's "getdepspec" function
+    lscc/GetDeploymentSpec: /Channel/Application/Readers
+
+    # ACL policy for lscc's "getccdata" function
+    lscc/GetChaincodeData: /Channel/Application/Readers
+
+    # ACL Policy for lscc's "getchaincodes" function
+    lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
+    
+
+    #---Query System Chaincode (qscc) function to policy mapping for access control---#
+
+    # ACL policy for qscc's "GetChainInfo" function
+    qscc/GetChainInfo: /Channel/Application/Readers
+    
+
+    # ACL policy for qscc's "GetBlockByNumber" function
+    qscc/GetBlockByNumber: /Channel/Application/Readers
+
+    # ACL policy for qscc's  "GetBlockByHash" function
+    qscc/GetBlockByHash: /Channel/Application/Readers
+
+    # ACL policy for qscc's "GetTransactionByID" function
+    qscc/GetTransactionByID: /Channel/Application/Readers
+
+    # ACL policy for qscc's "GetBlockByTxID" function
+    qscc/GetBlockByTxID: /Channel/Application/Readers
+
+    #---Configuration System Chaincode (cscc) function to policy mapping for access control---#
+
+    # ACL policy for cscc's "GetConfigBlock" function
+    cscc/GetConfigBlock: /Channel/Application/Readers
+
+    # ACL policy for cscc's "GetConfigTree" function
+    cscc/GetConfigTree: /Channel/Application/Readers
+
+    # ACL policy for cscc's "SimulateConfigTreeUpdate" function
+    cscc/SimulateConfigTreeUpdate: /Channel/Application/Readers
+
+    #---Miscellanesous peer function to policy mapping for access control---#
+
+    # ACL policy for invoking chaincodes on peer
+    peer/Propose: /Channel/Application/Writers
+
+    # ACL policy for chaincode to chaincode invocation
+    peer/ChaincodeToChaincode: /Channel/Application/Readers
+
+    #---Events resource to policy mapping for access control###---#
+
+    # ACL policy for sending block events
+    event/Block: /Channel/Application/Readers
+
+    # ACL policy for sending filtered block events
+    event/FilteredBlock: /Channel/Application/Readers
+
+    # Chaincode Lifecycle Policies introduced in Fabric 2.x
+    # ACL policy for _lifecycle's "CheckCommitReadiness" function
+    _lifecycle/CheckCommitReadiness: /Channel/Application/Writers
+
+    # ACL policy for _lifecycle's "CommitChaincodeDefinition" function
+    _lifecycle/CommitChaincodeDefinition: /Channel/Application/Writers
+
+    # ACL policy for _lifecycle's "QueryChaincodeDefinition" function
+    _lifecycle/QueryChaincodeDefinition: /Channel/Application/Readers
+    
+
+
+  # Default policies
+  Policies: &ApplicationDefaultPolicies
+
+    # --channel-config-policy
+    Endorsement:
+        Type: ImplicitMeta
+        Rule: "ANY Endorsement"
+    Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+    Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+    Admins:
+        Type: ImplicitMeta
+        Rule: "ANY Admins"
+
+    # Introduced in Fabric 2.x for Chaincode Lifecycle
+    LifecycleEndorsement:
+        Type: ImplicitMeta
+        Rule: "ANY Endorsement"
+
+
+  Organizations:
+
+  Capabilities:
+    <<: *ApplicationCapabilities
+ 
+
+#   CHANNEL
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+    Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+    Admins:
+        Type: ImplicitMeta
+        Rule: "ANY Admins"
+
+  Capabilities:
+    <<: *ChannelCapabilities
+
+  
+#   PROFILES
+Profiles:
+
+  MedlineOrdererGenesis:
+      <<: *ChannelDefaults
+      Orderer:
+          <<: *OrdererDefaults
+          Organizations:
+              - <<: *Orderer
+      Consortiums:
+        MedlineConsortium:
+            Organizations:
+                  - <<: *Hospital
+                  - <<: *Customer
+                  - <<: *Pharmacy
+                  - <<: *Delivery
+
+      Application:
+            <<: *ApplicationDefaults
+
+            Organizations:
+                - <<: *Hospital
+                - <<: *Customer
+                - <<: *Pharmacy
+                - <<: *Delivery
+                 
+          
+  MedlineChannel:
+    <<: *ChannelDefaults
+    Consortium: MedlineConsortium
+        
+    Application:
+        <<: *ApplicationDefaults
+        
+        Organizations:
+            - <<: *Hospital
+            - <<: *Customer
+            - <<: *Pharmacy
+            - <<: *Delivery
+
+        
+
+
+  

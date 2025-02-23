@@ -1,0 +1,60 @@
+# Defines four organizations
+#  - Orderer organization
+#  - Acme
+#  - Budget
+#  - Expo
+##### Orderer for acme
+OrdererOrgs:
+  - Name: Orderer
+    Domain: hospital.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+      - Hostname: orderer2
+      - Hostname: orderer3
+      - Hostname: orderer4
+      - Hostname: orderer5
+      
+#### Peers for acme
+PeerOrgs:
+  # Peer configuration for hospital
+  - Name: Hospital
+    Domain: hospital.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer1.hospital.com
+        CommonName: peer1.hospital.com
+    Users:
+      Count: 1
+
+  # Peer configuration for Customer
+  - Name: Customer
+    Domain: customer.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer1.customer.com
+        CommonName: peer1.customer.com
+    Users:
+      Count: 1
+
+  # Peer configuration for Pharma
+  - Name: Pharmacy
+    Domain: pharmacy.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer1.pharmacy.com
+        CommonName: peer1.pharmacy.com
+    Users:
+      Count: 1
+
+  # Peer configuration for Delivery
+  - Name: Delivery
+    Domain: delivery.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer1.delivery.com
+        CommonName: peer1.delivery.com
+    Users:
+      Count: 1
+
+      

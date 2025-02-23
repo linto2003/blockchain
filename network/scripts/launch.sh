@@ -8,7 +8,7 @@ if [ "$1" == "tls" ]; then
 elif [ "$1" == "raft" ]; then
 
     echo "********************* Launching with TLS RAFT *******************"
-    docker-compose -f ./docker-compose-base.yaml -f ./tls/docker-compose-tls.yaml -f ./raft/docker-compose-raft.yaml up -d
+    docker-compose -f ./docker-compose-base.yaml -f ./docker-compose-tls.yaml -f ./docker-compose-raft.yaml up -d
     
 else 
     #Default launch with TLS disabled

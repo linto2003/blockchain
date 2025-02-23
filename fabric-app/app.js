@@ -25,9 +25,9 @@ async function getContract() {
 
 app.post('/createOrder', async (req, res) => {
   try {
-    const { orderID, customerID, medicine, quantity } = req.body;
+    const { orderId, customerId, medicineName, quantity, location, requiresPrescription, prescriptionCode, status, prescriptionVerified } = req.body;
     const { contract, gateway } = await getContract();
-    await contract.submitTransaction('createOrder', orderID, customerID, medicine, quantity);
+    await contract.submitTransaction('CreateOrder', orderId, customerId, medicineName, location, quantity, requiresPrescription, prescriptionCode, status, prescriptionVerified);
     await gateway.disconnect();
     res.status(200).send('Order created successfully');
   } catch (error) {
@@ -40,7 +40,7 @@ app.post('/updateOrder', async (req, res) => {
   try {
     const { orderID, status } = req.body;
     const { contract, gateway } = await getContract();
-    await contract.submitTransaction('updateOrder', orderID, status);
+    await contract.submitTransaction('ProcessOrder', orderID);
     await gateway.disconnect();
     res.status(200).send('Order updated successfully');
   } catch (error) {
@@ -54,7 +54,7 @@ app.get('/queryOrder/:orderID', async (req, res) => {
     const { orderID } = req.params;
     const { contract, gateway } = await getContract();
     console.log(`Querying order with ID: ${orderID}`);
-    const result = await contract.evaluateTransaction('getOrder', orderID);
+    const result = await contract.evaluateTransaction('ReadOrder', orderID);
     await gateway.disconnect();
     res.status(200).json(JSON.parse(result.toString()));
   } catch (error) {

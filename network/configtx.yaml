@@ -80,7 +80,7 @@ Organizations:
           Rule: "OR('CustomerMSP.member')"
     AnchorPeers:
       - Host: peer1.customer.com
-        Port: 7051
+        Port: 8051
 
   - &Pharmacy
     Name: Pharmacy
@@ -104,7 +104,7 @@ Organizations:
           Rule: "OR('PharmacyMSP.member')"
     AnchorPeers:
       - Host: peer1.pharmacy.com
-        Port: 7051
+        Port: 9051
 
   - &Delivery
     Name: Delivery
@@ -128,7 +128,7 @@ Organizations:
           Rule: "OR('DeliveryMSP.member')"
     AnchorPeers:
       - Host: peer1.delivery.com
-        Port: 7051
+        Port: 10051
   
 
 #   ORDERER

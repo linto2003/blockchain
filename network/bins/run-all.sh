@@ -15,7 +15,7 @@ else
     echo "No channels found"
     bins/createChannel.sh
 fi
-
+echo "Hospital Joining Channel"
 # Give time for the channel tx to propagate
 sleep 3s
 
@@ -32,7 +32,7 @@ bins/anchor-update.sh
 # Set the context
 # $1 = tls in case TLS need to be enabled
 . bins/set-context.sh customer $1
-
+echo "Customer Joining Channel"
 # Join the budget peer
 bins/join-channel.sh
 
@@ -46,7 +46,7 @@ bins/anchor-update.sh
 # Set the context
 # $1 = tls in case TLS need to be enabled
 . bins/set-context.sh pharmacy $1
-
+echo "Pharmacy Joining Channel"
 # Join the pharmacy peer
 bins/join-channel.sh
 
@@ -56,7 +56,7 @@ sleep 3s
 bins/anchor-update.sh
 
 . bins/set-context.sh delivery $1
-
+echo "Delivery Joining Channel"
 # Join the pharmacy peer
 bins/join-channel.sh
 

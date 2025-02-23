@@ -1,0 +1,46 @@
+2025/01/12 20:10:14 [INFO] Configuration file location: /home/linto/Project_new/network/ca/server/fabric-ca-server-config.yaml
+2025/01/12 20:10:14 [INFO] Starting server in home directory: /home/linto/Project_new/network/ca/server
+2025/01/12 20:10:14 [WARNING] Unknown provider type: ; metrics disabled
+2025/01/12 20:10:14 [INFO] Server Version: v1.5.12
+2025/01/12 20:10:14 [INFO] Server Levels: &{Identity:2 Affiliation:1 Certificate:1 Credential:1 RAInfo:1 Nonce:1}
+2025/01/12 20:10:14 [WARNING] &{69 The specified CA certificate file /home/linto/Project_new/network/ca/server/ca-cert.pem does not exist}
+2025/01/12 20:10:14 [INFO] generating key: &{A:ecdsa S:256}
+2025/01/12 20:10:14 [INFO] encoded CSR
+2025/01/12 20:10:14 [INFO] signed certificate with serial number 652009203594902319881452284480005794832375194490
+2025/01/12 20:10:14 [INFO] The CA key and certificate were generated for CA hospital-ca
+2025/01/12 20:10:14 [INFO] The key was stored by BCCSP provider 'SW'
+2025/01/12 20:10:14 [INFO] The certificate is at: /home/linto/Project_new/network/ca/server/ca-cert.pem
+2025/01/12 20:10:14 [INFO] Initialized sqlite3 database at /home/linto/Project_new/network/ca/server/fabric-ca-server.db
+2025/01/12 20:10:14 [INFO] The issuer key was successfully stored. The public key is at: /home/linto/Project_new/network/ca/server/IssuerPublicKey, secret key is at: /home/linto/Project_new/network/ca/server/msp/keystore/IssuerSecretKey
+2025/01/12 20:10:14 [INFO] Idemix issuer revocation public and secret keys were generated for CA 'hospital-ca'
+2025/01/12 20:10:14 [INFO] The revocation key was successfully stored. The public key is at: /home/linto/Project_new/network/ca/server/IssuerRevocationPublicKey, private key is at: /home/linto/Project_new/network/ca/server/msp/keystore/IssuerRevocationPrivateKey
+2025/01/12 20:10:14 [INFO] Home directory for default CA: /home/linto/Project_new/network/ca/server
+2025/01/12 20:10:14 [INFO] Operation Server Listening on [::]:43715
+2025/01/12 20:10:14 [INFO] Listening on http://0.0.0.0:7054
+2025/01/12 20:10:21 [INFO] signed certificate with serial number 131201464247232386875741721158284702760198076323
+2025/01/12 20:10:21 [INFO] 127.0.0.1:54772 POST /enroll 201 0 "OK"
+2025/01/12 20:12:32 [INFO] 127.0.0.1:46848 POST /enroll 401 23 "Failed to get user: Failed to get User: sql: no rows in result set"
+2025/01/12 20:12:32 [INFO] 127.0.0.1:46864 POST /enroll 401 23 "Failed to get user: Failed to get User: sql: no rows in result set"
+2025/01/12 20:12:33 [INFO] 127.0.0.1:40394 POST /enroll 401 23 "Failed to get user: Failed to get User: sql: no rows in result set"
+2025/01/12 20:12:33 [INFO] 127.0.0.1:40410 POST /enroll 401 23 "Failed to get user: Failed to get User: sql: no rows in result set"
+2025/01/12 20:12:33 [INFO] 127.0.0.1:40416 POST /enroll 401 23 "Failed to get user: Failed to get User: sql: no rows in result set"
+2025/01/12 20:22:10 [INFO] 127.0.0.1:54712 POST /register 201 0 "OK"
+2025/01/12 20:22:54 [INFO] 127.0.0.1:49180 POST /register 201 0 "OK"
+2025/01/12 20:23:07 [INFO] 127.0.0.1:57890 POST /register 201 0 "OK"
+2025/01/12 20:23:18 [INFO] 127.0.0.1:36680 POST /register 201 0 "OK"
+2025/01/12 20:23:26 [INFO] 127.0.0.1:37662 POST /register 201 0 "OK"
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51300 POST /register 409 74 "Identity 'hospital-admin' is already registered"
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51310 POST /register 409 74 "Identity 'pharmacy-admin' is already registered"
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51314 POST /register 409 74 "Identity 'orderer-admin' is already registered"
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51328 POST /register 409 74 "Identity 'customer-admin' is already registered"
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51340 POST /register 409 74 "Identity 'delivery-admin' is already registered"
+2025/01/12 20:24:42 [INFO] signed certificate with serial number 393609907139815222919149671060087489431042180626
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51344 POST /enroll 201 0 "OK"
+2025/01/12 20:24:42 [INFO] signed certificate with serial number 564692576619315232695186024660832925041244918454
+2025/01/12 20:24:42 [INFO] 127.0.0.1:51358 POST /enroll 201 0 "OK"
+2025/01/12 20:24:43 [INFO] signed certificate with serial number 544659863170121107997818273291324987838806447618
+2025/01/12 20:24:43 [INFO] 127.0.0.1:55248 POST /enroll 201 0 "OK"
+2025/01/12 20:24:43 [INFO] signed certificate with serial number 173708603340812928954583377737353121737341760085
+2025/01/12 20:24:43 [INFO] 127.0.0.1:55250 POST /enroll 201 0 "OK"
+2025/01/12 20:24:43 [INFO] signed certificate with serial number 692729077891985665523808380327652709340985778916
+2025/01/12 20:24:43 [INFO] 127.0.0.1:55256 POST /enroll 201 0 "OK"

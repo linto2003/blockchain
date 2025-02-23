@@ -1,156 +1,213 @@
-
 package main
 
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
-	// "github.com/hyperledger/fabric/core/chaincode/shim" 
-	"github.com/hyperledger/fabric-chaincode-go/shim"
-	
-	// pb "github.com/hyperledger/fabric/protos/peer"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
+// MedicineOrderChaincode defines the smart contract
+type MedicineOrderChaincode struct {
+	contractapi.Contract
+}
+
+// Order represents a medicine order
 type Order struct {
-	OrderID    string `json:"orderID"`
-	CustomerID string `json:"customerID"`
-	Medicine   string `json:"medicine"`
-	Quantity   int    `json:"quantity"`
-	Status     string `json:"status"`
+	OrderID              string `json:"orderId"`
+	CustomerID           string `json:"customerId"`
+	MedicineName         string `json:"medicineName"`
+	Quantity             int    `json:"quantity"`
+	Location             string `json:"location"`
+	RequiresPrescription bool   `json:"requiresPrescription"`
+	PrescriptionCode     string `json:"prescriptionCode"`
+	Status               string `json:"status"` // Created, Verified, Processed, Delivered
+	PrescriptionVerified bool   `json:"prescriptionVerified"`
 }
 
-type OrderChaincode struct {}
-
-// Init initializes the ledger with no orders
-func (t *OrderChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	return shim.Success(nil)
-}
-
-// Invoke handles create, query, update, and status operations
-func (t *OrderChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	function, args := stub.GetFunctionAndParameters()
-
-	switch function {
-	case "createOrder":
-		return t.createOrder(stub, args)
-	case "getOrder":
-		return t.getOrder(stub, args)
-	case "updateOrder":
-		return t.updateOrder(stub, args)
-	case "getOrderStatus":
-		return t.getOrderStatus(stub, args)
-	default:
-		return shim.Error("Unknown function call")
-	}
-}
-
-// createOrder creates a new order
-func (t *OrderChaincode) createOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 4 {
-		return shim.Error("Incorrect number of arguments. Expecting OrderID, CustomerID, Medicine, Quantity")
-	}
-
-	quantity, err := strconv.Atoi(args[3])
+// CreateOrder creates a new medicine order
+func (c *MedicineOrderChaincode) CreateOrder(ctx contractapi.TransactionContextInterface, orderID, customerID, medicineName, location string, quantity int, requiresPrescription bool, prescriptionCode string) error {
+	exists, err := c.OrderExists(ctx, orderID)
 	if err != nil {
-		return shim.Error("Invalid quantity")
+		return err
+	}
+	if exists {
+		return fmt.Errorf("order %s already exists", orderID)
 	}
 
 	order := Order{
-		OrderID:    args[0],
-		CustomerID: args[1],
-		Medicine:   args[2],
-		Quantity:   quantity,
-		Status:     "Pending",
+		OrderID:              orderID,
+		CustomerID:           customerID,
+		MedicineName:         medicineName,
+		Quantity:             quantity,
+		Location:             location,
+		RequiresPrescription: requiresPrescription,
+		PrescriptionCode:     prescriptionCode,
+		Status:               "Created",
+		PrescriptionVerified: false,
 	}
 
 	orderJSON, err := json.Marshal(order)
 	if err != nil {
-		return shim.Error("Failed to marshal order")
+		return err
 	}
 
-	if err := stub.PutState(order.OrderID, orderJSON); err != nil {
-		return shim.Error("Failed to save order")
-	}
-
-	return shim.Success(nil)
+	return ctx.GetStub().PutState(orderID, orderJSON)
 }
 
-// getOrder retrieves an order by OrderID
-func (t *OrderChaincode) getOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting OrderID")
-	}
-
-	orderJSON, err := stub.GetState(args[0])
+// VerifyPrescription verifies the prescription for the order
+func (c *MedicineOrderChaincode) VerifyPrescription(ctx contractapi.TransactionContextInterface, orderID, prescriptionCode string) error {
+	order, err := c.ReadOrder(ctx, orderID)
 	if err != nil {
-		return shim.Error("Failed to get order")
-	}
-	if orderJSON == nil {
-		return shim.Error("Order not found")
+		return err
 	}
 
-	return shim.Success(orderJSON)
+	if !order.RequiresPrescription {
+		return fmt.Errorf("order %s does not require a prescription", orderID)
+	}
+
+	if order.PrescriptionCode != prescriptionCode {
+		return fmt.Errorf("prescription code does not match for order %s", orderID)
+	}
+
+	order.PrescriptionVerified = true
+	order.Status = "Verified"
+
+	orderJSON, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState(orderID, orderJSON)
 }
 
-// updateOrder updates the status of an existing order
-func (t *OrderChaincode) updateOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting OrderID, Status")
-	}
-
-	orderJSON, err := stub.GetState(args[0])
+// ProcessOrder processes the order by the pharmacist
+func (c *MedicineOrderChaincode) ProcessOrder(ctx contractapi.TransactionContextInterface, orderID string) error {
+	order, err := c.ReadOrder(ctx, orderID)
 	if err != nil {
-		return shim.Error("Failed to get order")
-	}
-	if orderJSON == nil {
-		return shim.Error("Order not found")
+		return err
 	}
 
-	order := Order{}
-	if err := json.Unmarshal(orderJSON, &order); err != nil {
-		return shim.Error("Failed to unmarshal order")
+	if order.RequiresPrescription && !order.PrescriptionVerified {
+		return fmt.Errorf("prescription for order %s has not been verified", orderID)
 	}
 
-	order.Status = args[1]
+	order.Status = "Processed"
 
-	updatedOrderJSON, err := json.Marshal(order)
+	orderJSON, err := json.Marshal(order)
 	if err != nil {
-		return shim.Error("Failed to marshal updated order")
+		return err
 	}
 
-	if err := stub.PutState(order.OrderID, updatedOrderJSON); err != nil {
-		return shim.Error("Failed to update order")
-	}
-
-	return shim.Success(nil)
+	return ctx.GetStub().PutState(orderID, orderJSON)
 }
 
-// getOrderStatus retrieves the status of an order by OrderID
-func (t *OrderChaincode) getOrderStatus(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting OrderID")
+// DeliverOrder marks the order as delivered by the delivery person
+func (c *MedicineOrderChaincode) DeliverOrder(ctx contractapi.TransactionContextInterface, orderID string) error {
+	order, err := c.ReadOrder(ctx, orderID)
+	if err != nil {
+		return err
 	}
 
-	orderJSON, err := stub.GetState(args[0])
+	if order.Status != "Processed" {
+		return fmt.Errorf("order %s has not been processed yet", orderID)
+	}
+
+	order.Status = "Delivered"
+
+	orderJSON, err := json.Marshal(order)
 	if err != nil {
-		return shim.Error("Failed to get order")
+		return err
+	}
+
+	return ctx.GetStub().PutState(orderID, orderJSON)
+}
+
+// ReadOrder retrieves an order by its ID
+func (c *MedicineOrderChaincode) ReadOrder(ctx contractapi.TransactionContextInterface, orderID string) (*Order, error) {
+	orderJSON, err := ctx.GetStub().GetState(orderID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read order: %v", err)
 	}
 	if orderJSON == nil {
-		return shim.Error("Order not found")
+		return nil, fmt.Errorf("order %s does not exist", orderID)
 	}
 
-	order := Order{}
-	if err := json.Unmarshal(orderJSON, &order); err != nil {
-		return shim.Error("Failed to unmarshal order")
+	var order Order
+	err = json.Unmarshal(orderJSON, &order)
+	if err != nil {
+		return nil, err
 	}
 
-	return shim.Success([]byte(order.Status))
+	return &order, nil
+}
+
+// OrderExists checks if an order exists
+func (c *MedicineOrderChaincode) OrderExists(ctx contractapi.TransactionContextInterface, orderID string) (bool, error) {
+	orderJSON, err := ctx.GetStub().GetState(orderID)
+	if err != nil {
+		return false, fmt.Errorf("failed to check order existence: %v", err)
+	}
+	return orderJSON != nil, nil
+}
+
+// GetAllOrders retrieves all orders from the ledger
+func (c *MedicineOrderChaincode) GetAllOrders(ctx contractapi.TransactionContextInterface) ([]*Order, error) {
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	var orders []*Order
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var order Order
+		err = json.Unmarshal(queryResponse.Value, &order)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, &order)
+	}
+
+	return orders, nil
+}
+
+// InitLedger initializes the ledger with some default data
+func (c *MedicineOrderChaincode) InitLedger(ctx contractapi.TransactionContextInterface) error {
+	orders := []Order{
+		{OrderID: "1", CustomerID: "cust1", MedicineName: "Paracetamol", Quantity: 10, Location: "New York", RequiresPrescription: false, Status: "Created", PrescriptionVerified: false},
+		{OrderID: "2", CustomerID: "cust2", MedicineName: "Amoxicillin", Quantity: 5, Location: "Los Angeles", RequiresPrescription: true, PrescriptionCode: "RX123", Status: "Created", PrescriptionVerified: false},
+		{OrderID: "3", CustomerID: "cust3", MedicineName: "Ibuprofen", Quantity: 20, Location: "Chicago", RequiresPrescription: false, Status: "Created", PrescriptionVerified: false},
+	}
+
+	for _, order := range orders {
+		orderJSON, err := json.Marshal(order)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetStub().PutState(order.OrderID, orderJSON)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func main() {
-	if err := shim.Start(new(OrderChaincode)); err != nil {
-		fmt.Printf("Error starting Order chaincode: %s", err)
+	chaincode, err := contractapi.NewChaincode(new(MedicineOrderChaincode))
+	if err != nil {
+		fmt.Printf("Error creating chaincode: %v\n", err)
+		return
+	}
+
+	if err := chaincode.Start(); err != nil {
+		fmt.Printf("Error starting chaincode: %v\n", err)
 	}
 }

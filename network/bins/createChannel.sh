@@ -8,3 +8,4 @@ fi
 peer channel create -c medlinechannel -f medlinechannel.tx --outputBlock medlinechannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
 
 # peer channel create -c medlinechannel -f medlinechannel.tx --outputBlock medlinechannel.block -o $ORDERER_ADDRESS --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer channel create -c medlinechannel -f medlinechannel.tx --outputBlock medlinechannel.block -o $ORDERER_ADDRESS 

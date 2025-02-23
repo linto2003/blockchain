@@ -67,7 +67,7 @@ General:
         # Disconnect the client if the time between pings is less than the specified time
         ServerMinInterval: 60s
         # Server pings the clients on open connection with the specified time between pings
-        ServerInterval: 7200s
+        ServerInterval: 60s
         # Server expects the clients to respond to pings. Server disconnets if response not receieved within timeout
         ServerTimeout: 20s
 
@@ -80,6 +80,7 @@ General:
           - ./ca.crt
         ClientAuthRequired: false
         ClientRootCAs:
+
 
 
 ################################################################################

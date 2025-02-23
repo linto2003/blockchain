@@ -33,7 +33,6 @@ configtxgen -outputCreateChannelTx  medlinechannel.tx -channelID medlinechannel 
 echo    "====>Launching the containers"
 ./scripts/launch.sh $1
 
-
 echo    "====>Setting up anchor peers"
 
 # Why this sleep is needed for RAFT?

@@ -60,6 +60,7 @@ function cc_install {
 #           --version $CC_VERSION --package-id $PACKAGE_ID --sequence $CC2_SEQUENCE \
 #            $CC2_INIT_REQUIRED    -o $ORDERER_ADDRESS  --tls true --cafile $ORDERER_CA_ROOTFILE --waitForEvent
 
+# peer lifecycle chaincode queryinstalled
 
 
 function cc_instantiate {
@@ -77,11 +78,11 @@ function cc_instantiate {
         echo "===> Step 1   Committing the chaincode"
         peer lifecycle chaincode commit -C $CC_CHANNEL_ID -n $CC_NAME -v $CC_VERSION \
             --sequence $CC2_SEQUENCE  $CC2_INIT_REQUIRED  $TLS_PARAMETERS  --waitForEvent
-#peer lifecycle chaincode commit -C $CC_CHANNEL_ID -n $CC_NAME -v $CC_VERSION --sequence $CC2_SEQUENCE  $CC2_INIT_REQUIRED  --tls true --cafile $ORDERER_CA_ROOTFILE --waitForEvent
+# peer lifecycle chaincode commit -C $CC_CHANNEL_ID -n $CC_NAME -v $CC_VERSION --sequence $CC2_SEQUENCE  $CC2_INIT_REQUIRED  --tls true --cafile $ORDERER_CA_ROOTFILE --waitForEvent
         echo "===> Step 3   Initing the chaincode"
         peer chaincode invoke  -C $CC_CHANNEL_ID -n $CC_NAME -c $CC_CONSTRUCTOR \
         --waitForEvent --isInit -o $ORDERER_ADDRESS  $TLS_PARAMETERS
-#peer chaincode invoke  -C $CC_CHANNEL_ID -n $CC_NAME -c $CC_CONSTRUCTOR --waitForEvent --isInit -o $ORDERER_ADDRESS  --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode invoke  -C $CC_CHANNEL_ID -n $CC_NAME -c $CC_CONSTRUCTOR --waitForEvent --isInit -o $ORDERER_ADDRESS  --tls true --cafile $ORDERER_CA_ROOTFILE
     fi
 }
 
@@ -100,8 +101,7 @@ case $OPERATION in
             peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["query","a"]}'
             echo -n "query b="
             peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["query","b"]}'
-            #peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["getOrder","order123"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
- 
+            #peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
         ;;
     
     "invoke")
@@ -113,7 +113,9 @@ case $OPERATION in
     *) usage
 esac
 
-#peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createOrder","order123","Aditya","Crocin","10"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createOrder","order123","Aditya","Crocin","10"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
 
-#peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["updateOrder","order123","Shipped"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["updateOrder","order123","Shipped"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
 
+# peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["CreateOrder","4","linto","MedZol","Mumbai","35","true","RX234"]}' --waitForEvent -o $ORDERER_ADDRESS --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["VerifyPrescription","4","RX234"]}' --waitForEvent -o $ORDERER_ADDRESS --tls true --cafile $ORDERER_CA_ROOTFILE
