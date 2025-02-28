@@ -11,4 +11,4 @@ fi
 peer channel join   -b ./medlinechannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
 
 #peer channel join   -b ./medlinechannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
-#peer channel join   -b ./medlinechannel.block -o $ORDERER_ADDRESS --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer channel join   -b ./medlinechannel.block -o $ORDERER_ADDRESS --tls true --cafile $ORDERER_CA_ROOTFILE

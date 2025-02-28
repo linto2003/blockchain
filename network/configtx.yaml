@@ -2,7 +2,7 @@
 # Docker Configtx
 # Sets up the 3 orgs in the network
 
-#   CAPABILITIES
+# CAPABILITIES
 Capabilities:
   Application: &ApplicationCapabilities
     V2_0: true
@@ -17,21 +17,19 @@ Organizations:
     Name: Orderer
     ID: OrdererMSP
     MSPDir: ./crypto-config/ordererOrganizations/hospital.com/msp
-    # Policies are mandatory starting 2.x
     Policies: &OrdererPolicies
       Readers:
-          Type: Signature
-          Rule: "OR('OrdererMSP.member')"
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
       Writers:
-          Type: Signature
-          Rule: "OR('OrdererMSP.member')"
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
       Admins:
-          Type: Signature
-          # ONLY Admin Role can carry out administration activities
-          Rule: "OR('OrdererMSP.admin')"
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
       Endorsement:
-          Type: Signature
-          Rule: "OR('OrdererMSP.member')"
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
 
   - &Hospital
     Name: Hospital
@@ -39,21 +37,17 @@ Organizations:
     MSPDir: ./crypto-config/peerOrganizations/hospital.com/msp
     Policies: &HospitalPolicies
       Readers:
-          Type: Signature
-          # Any member can READ e.g., query
-          Rule: "OR('HospitalMSP.admin', 'HospitalMSP.peer', 'HospitalMSP.client')"
+        Type: Signature
+        Rule: "OR('HospitalMSP.admin', 'HospitalMSP.peer', 'HospitalMSP.client')"
       Writers:
-          Type: Signature
-          # Any member can WRITE e.g., submit transaction
-          Rule: "OR('HospitalMSP.member')"
+        Type: Signature
+        Rule: "OR('HospitalMSP.member')"
       Admins:
-          Type: Signature
-          # Either Acme admin OR Orderer Admin can carry out admin activities
-          Rule: "OR('HospitalMSP.admin','OrdererMSP.admin')"
+        Type: Signature
+        Rule: "OR('HospitalMSP.admin','OrdererMSP.admin')"
       Endorsement:
-          Type: Signature
-          # Any member can act as an endorser
-          Rule: "OR('HospitalMSP.member')"
+        Type: Signature
+        Rule: "OR('HospitalMSP.member')"
     AnchorPeers:
       - Host: peer1.hospital.com
         Port: 7051
@@ -64,20 +58,17 @@ Organizations:
     MSPDir: ./crypto-config/peerOrganizations/customer.com/msp
     Policies: &CustomerPolicies
       Readers:
-          Type: Signature
-          # Any member
-          Rule: "OR('CustomerMSP.member')"
+        Type: Signature
+        Rule: "OR('CustomerMSP.member')"
       Writers:
-          Type: Signature
-          # Any member
-          Rule: "OR('CustomerMSP.member')"
+        Type: Signature
+        Rule: "OR('CustomerMSP.member')"
       Admins:
-          Type: Signature
-          # BOTH Budget Admin AND Orderer Admin needed for admin activities
-          Rule: "OR('CustomerMSP.member')"
+        Type: Signature
+        Rule: "OR('CustomerMSP.member')"
       Endorsement:
-          Type: Signature
-          Rule: "OR('CustomerMSP.member')"
+        Type: Signature
+        Rule: "OR('CustomerMSP.member')"
     AnchorPeers:
       - Host: peer1.customer.com
         Port: 8051
@@ -88,20 +79,17 @@ Organizations:
     MSPDir: ./crypto-config/peerOrganizations/pharmacy.com/msp
     Policies: &PharmacyPolicies
       Readers:
-          Type: Signature
-          # Any member
-          Rule: "OR('PharmacyMSP.member')"
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
       Writers:
-          Type: Signature
-          # Any member
-          Rule: "OR('PharmacyMSP.member')"
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
       Admins:
-          Type: Signature
-          # BOTH Budget Admin AND Orderer Admin needed for admin activities
-          Rule: "OR('PharmacyMSP.member')"
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
       Endorsement:
-          Type: Signature
-          Rule: "OR('PharmacyMSP.member')"
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
     AnchorPeers:
       - Host: peer1.pharmacy.com
         Port: 9051
@@ -112,227 +100,155 @@ Organizations:
     MSPDir: ./crypto-config/peerOrganizations/delivery.com/msp
     Policies: &DeliveryPolicies
       Readers:
-          Type: Signature
-          # Any member
-          Rule: "OR('DeliveryMSP.member')"
+        Type: Signature
+        Rule: "OR('DeliveryMSP.member')"
       Writers:
-          Type: Signature
-          # Any member
-          Rule: "OR('DeliveryMSP.member')"
+        Type: Signature
+        Rule: "OR('DeliveryMSP.member')"
       Admins:
-          Type: Signature
-          # BOTH Budget Admin AND Orderer Admin needed for admin activities
-          Rule: "OR('DeliveryMSP.member')"
+        Type: Signature
+        Rule: "OR('DeliveryMSP.member')"
       Endorsement:
-          Type: Signature
-          Rule: "OR('DeliveryMSP.member')"
+        Type: Signature
+        Rule: "OR('DeliveryMSP.member')"
     AnchorPeers:
       - Host: peer1.delivery.com
         Port: 10051
-  
 
-#   ORDERER
+# ORDERER
 Orderer: &OrdererDefaults
-
   OrdererType: solo
-
   Addresses:
-    # UPDATE THE IP ADDRESS
     - orderer.hospital.com:7050
-  # Policies for Orderer
   Policies:
     Readers:
-        Type: ImplicitMeta
-        Rule: "ANY Readers"
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
     Writers:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
     Admins:
-        Type: ImplicitMeta  
-        # UPDATED December 15, 2019
-        Rule: "ANY Admins"
-        # Rule: "MAJORITY Admins"
-
-    # BlockValidation specifies what signatures must be included in the block
-    # from the orderer for the peer to validate it.
-    # Starting Fabric 2.x this is REQUIRED
+      Type: ImplicitMeta
+      Rule: "ANY Admins"
     BlockValidation:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
-
-  # Batch Timeout: The amount of time to wait before creating a batch
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
   BatchTimeout: 2s
-
-  # Batch Size: Controls the number of messages batched into a block
   BatchSize:
     MaxMessageCount: 10
     AbsoluteMaxBytes: 98 MB
     PreferredMaxBytes: 512 KB
-
   Capabilities:
     <<: *OrdererCapabilities
 
+# APPLICATION
 Application: &ApplicationDefaults
-
   ACLs: &ACLsDefault
-    
-    # ACL policy for lscc's "getid" function
     lscc/ChaincodeExists: /Channel/Application/Readers
-
-    # ACL policy for lscc's "getdepspec" function
     lscc/GetDeploymentSpec: /Channel/Application/Readers
-
-    # ACL policy for lscc's "getccdata" function
     lscc/GetChaincodeData: /Channel/Application/Readers
-
-    # ACL Policy for lscc's "getchaincodes" function
     lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
-    
-
-    #---Query System Chaincode (qscc) function to policy mapping for access control---#
-
-    # ACL policy for qscc's "GetChainInfo" function
     qscc/GetChainInfo: /Channel/Application/Readers
-    
-
-    # ACL policy for qscc's "GetBlockByNumber" function
     qscc/GetBlockByNumber: /Channel/Application/Readers
-
-    # ACL policy for qscc's  "GetBlockByHash" function
     qscc/GetBlockByHash: /Channel/Application/Readers
-
-    # ACL policy for qscc's "GetTransactionByID" function
     qscc/GetTransactionByID: /Channel/Application/Readers
-
-    # ACL policy for qscc's "GetBlockByTxID" function
     qscc/GetBlockByTxID: /Channel/Application/Readers
-
-    #---Configuration System Chaincode (cscc) function to policy mapping for access control---#
-
-    # ACL policy for cscc's "GetConfigBlock" function
     cscc/GetConfigBlock: /Channel/Application/Readers
-
-    # ACL policy for cscc's "GetConfigTree" function
     cscc/GetConfigTree: /Channel/Application/Readers
-
-    # ACL policy for cscc's "SimulateConfigTreeUpdate" function
     cscc/SimulateConfigTreeUpdate: /Channel/Application/Readers
-
-    #---Miscellanesous peer function to policy mapping for access control---#
-
-    # ACL policy for invoking chaincodes on peer
     peer/Propose: /Channel/Application/Writers
-
-    # ACL policy for chaincode to chaincode invocation
     peer/ChaincodeToChaincode: /Channel/Application/Readers
-
-    #---Events resource to policy mapping for access control###---#
-
-    # ACL policy for sending block events
     event/Block: /Channel/Application/Readers
-
-    # ACL policy for sending filtered block events
     event/FilteredBlock: /Channel/Application/Readers
-
-    # Chaincode Lifecycle Policies introduced in Fabric 2.x
-    # ACL policy for _lifecycle's "CheckCommitReadiness" function
     _lifecycle/CheckCommitReadiness: /Channel/Application/Writers
-
-    # ACL policy for _lifecycle's "CommitChaincodeDefinition" function
     _lifecycle/CommitChaincodeDefinition: /Channel/Application/Writers
-
-    # ACL policy for _lifecycle's "QueryChaincodeDefinition" function
     _lifecycle/QueryChaincodeDefinition: /Channel/Application/Readers
-    
-
-
-  # Default policies
   Policies: &ApplicationDefaultPolicies
-
-    # --channel-config-policy
     Endorsement:
-        Type: ImplicitMeta
-        Rule: "ANY Endorsement"
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
     Readers:
-        Type: ImplicitMeta
-        Rule: "ANY Readers"
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
     Writers:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
     Admins:
-        Type: ImplicitMeta
-        Rule: "ANY Admins"
-
-    # Introduced in Fabric 2.x for Chaincode Lifecycle
+      Type: ImplicitMeta
+      Rule: "ANY Admins"
     LifecycleEndorsement:
-        Type: ImplicitMeta
-        Rule: "ANY Endorsement"
-
-
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
   Organizations:
-
   Capabilities:
     <<: *ApplicationCapabilities
- 
 
-#   CHANNEL
+# CHANNEL
 Channel: &ChannelDefaults
   Policies:
     Readers:
-        Type: ImplicitMeta
-        Rule: "ANY Readers"
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
     Writers:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
     Admins:
-        Type: ImplicitMeta
-        Rule: "ANY Admins"
-
+      Type: ImplicitMeta
+      Rule: "ANY Admins"
   Capabilities:
     <<: *ChannelCapabilities
 
-  
-#   PROFILES
+# PROFILES
 Profiles:
 
   MedlineOrdererGenesis:
-      <<: *ChannelDefaults
-      Orderer:
-          <<: *OrdererDefaults
-          Organizations:
-              - <<: *Orderer
-      Consortiums:
-        MedlineConsortium:
-            Organizations:
-                  - <<: *Hospital
-                  - <<: *Customer
-                  - <<: *Pharmacy
-                  - <<: *Delivery
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - <<: *Orderer
+    Consortiums:
+      MedlineConsortium:
+        Organizations:
+          - <<: *Hospital
+          - <<: *Customer
+          - <<: *Pharmacy
+          - <<: *Delivery
 
-      Application:
-            <<: *ApplicationDefaults
-
-            Organizations:
-                - <<: *Hospital
-                - <<: *Customer
-                - <<: *Pharmacy
-                - <<: *Delivery
-                 
-          
   MedlineChannel:
     <<: *ChannelDefaults
     Consortium: MedlineConsortium
-        
     Application:
-        <<: *ApplicationDefaults
-        
-        Organizations:
-            - <<: *Hospital
-            - <<: *Customer
-            - <<: *Pharmacy
-            - <<: *Delivery
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *Customer
+        - <<: *Pharmacy
+        - <<: *Delivery
 
-        
+  PrescVerChannel:
+    <<: *ChannelDefaults
+    Consortium: MedlineConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *Hospital
+        - <<: *Customer
+        - <<: *Pharmacy
 
+  PharmaFulChannel:
+    <<: *ChannelDefaults
+    Consortium: MedlineConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *Pharmacy
+        - <<: *Delivery
 
-  
+  DeliveryChannel:
+    <<: *ChannelDefaults
+    Consortium: MedlineConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *Customer
+        - <<: *Delivery

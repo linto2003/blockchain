@@ -1,0 +1,70 @@
+version: '2'
+
+networks:
+  medline:
+
+# Storage outside the containers
+volumes:
+  data-couchdb-peer1.hospital.com:
+  data-couchdb-peer1.customer.com:
+  data-couchdb-peer1.pharmacy.com:
+  data-couchdb-peer1.delivery.com:
+
+services:
+
+  # CouchDB for Hospital peer1
+  couchdb-peer1.hospital.com:
+    container_name: couchdb-peer1.hospital.com
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5984:5984
+    volumes:
+      - data-couchdb-peer1.hospital.com:/opt/couchdb/data
+    networks:
+      - medline
+
+  # CouchDB for Customer peer1
+  couchdb-peer1.customer.com:
+    container_name: couchdb-peer1.customer.com
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5985:5984
+    volumes:
+      - data-couchdb-peer1.customer.com:/opt/couchdb/data
+    networks:
+      - medline
+    
+  # CouchDB for Pharmacy peer1
+  couchdb-peer1.pharmacy.com:
+    container_name: couchdb-peer1.pharmacy.com
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5986:5984
+    volumes:
+      - data-couchdb-peer1.pharmacy.com:/opt/couchdb/data
+    networks:
+      - medline
+    
+
+  # CouchDB for Delivery peer1  
+  couchdb-peer1.delivery.com:
+    container_name: couchdb-peer1.delivery.com
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5987:5984
+    volumes:
+      - data-couchdb-peer1.delivery.com:/opt/couchdb/data
+    networks:
+      - medline

@@ -1,0 +1,174 @@
+#!/bin/bash
+# Use this for testing your cloud setup *or* even local setup :)
+# Example ./cc-test.sh  install  
+function    usage {
+    echo  "Usage: ./cc-test.sh    install | instantiate | invoke | query "
+    echo  "Installs the GoLang CC to specified Organization"
+}
+
+# echo "CORE_PEER_TLS_ENABLED=$CORE_PEER_TLS_ENABLED"
+# echo "ORDERER_CA_ROOTFILE=$ORDERER_CA_ROOTFILE"
+# echo "CORE_PEER_TLS_ROOTCERT_FILE=$CORE_PEER_TLS_ROOTCERT_FILE"
+
+TLS_PARAMETERS=""
+if [ "$CORE_PEER_TLS_ENABLED" == "true" ]; then
+   echo "*** Executing with TLS Enabled ***"
+   TLS_PARAMETERS=" --tls true --cafile $ORDERER_CA_ROOTFILE"
+fi
+
+# Uses the core.yaml file in current folder - copy of core.yaml under cloud/bins/peer
+# export FABRIC_CFG_PATH=./
+
+OPERATION=$1
+
+echo "CC Operation : $OPERATION    for   Org: $CURRENT_ORG_NAME"
+
+# Extracts the package id from installed package
+function cc_get_package_id {  
+    OUTPUT=$(peer lifecycle chaincode queryinstalled -O json)
+    PACKAGE_ID=$(echo $OUTPUT | jq -r ".installed_chaincodes[]|select(.label==\"$LABEL\")|.package_id")
+}
+
+
+# Packages & Installs the chaincode
+function cc_install {
+    # Check if package already exist
+    if [ -f "$CC2_PACKAGE_FOLDER/$PACKAGE_NAME" ]; then
+        echo "====> Step 1 Using the existing chaincode package:   $CC2_PACKAGE_FOLDER/$PACKAGE_NAME"
+    else
+        echo "====> Step 1 Creating the chaincode package $CC2_PACKAGE_FOLDER/$PACKAGE_NAME"
+        peer lifecycle chaincode package $CC2_PACKAGE_FOLDER/$PACKAGE_NAME -p $CC_PATH \
+                    --label="$CC_NAME.$CC_VERSION-$INTERNAL_DEV_VERSION" -l $CC_LANGUAGE
+    fi
+    echo "====> Step 2   Installing chaincode (may fail if CC/version already there)"
+    peer lifecycle chaincode install  $CC2_PACKAGE_FOLDER/$PACKAGE_NAME
+
+    # set the package ID
+    cc_get_package_id
+
+    # Approving the chaincode
+    echo "===> Step 3   Approving the chaincode"
+    peer lifecycle chaincode approveformyorg --channelID $CC_CHANNEL_ID  --name $CC_NAME \
+            --version $CC_VERSION --package-id $PACKAGE_ID --sequence $CC2_SEQUENCE \
+            $CC2_INIT_REQUIRED    -o $ORDERER_ADDRESS  $TLS_PARAMETERS --waitForEvent
+
+    echo "====> Step 4   Query if installed successfully" 
+    peer lifecycle chaincode queryinstalled
+}
+
+# peer lifecycle chaincode approveformyorg --channelID $CC_CHANNEL_ID  --name $CC_NAME \
+#           --version $CC_VERSION --package-id $PACKAGE_ID --sequence $CC2_SEQUENCE \
+#            $CC2_INIT_REQUIRED    -o $ORDERER_ADDRESS  --tls true --cafile $ORDERER_CA_ROOTFILE --waitForEvent
+
+# peer lifecycle chaincode queryinstalled
+
+
+function cc_instantiate {
+    # set the package ID
+    cc_get_package_id
+
+    # if already committed do nothing
+    CHECK_IF_COMMITTED=$(peer lifecycle chaincode querycommitted -C $CC_CHANNEL_ID -n $CC_NAME)
+    if [ $? == "0" ]; then
+        echo "===> Step 1   Chaicode Already Committed - Ready for invoke & query."
+        
+        peer chaincode invoke  -C $CC_CHANNEL_ID -n $CC_NAME -c $CC_CONSTRUCTOR \
+        --waitForEvent --isInit -o $ORDERER_ADDRESS  $TLS_PARAMETERS
+    else
+        echo "===> Step 1   Committing the chaincode"
+        peer lifecycle chaincode commit -C $CC_CHANNEL_ID -n $CC_NAME -v $CC_VERSION \
+            --sequence $CC2_SEQUENCE   $TLS_PARAMETERS  --waitForEvent
+        echo "===> Step 3   Initing the chaincode"
+        peer chaincode invoke  -C $CC_CHANNEL_ID -n $CC_NAME -c $CC_CONSTRUCTOR \
+        --waitForEvent -o $ORDERER_ADDRESS  $TLS_PARAMETERS
+    fi
+}
+
+# EXECUTION CHAIN
+
+# channels - medlinechannel , prescverchannel , deliverychannel , pharmafulchannel
+# orgs - hospital , pharmacy , customer , delivery
+
+#medlinechannel - customer, pharmacy , delivery
+#prescverchannel - hospital, pharmacy, customer
+#pharmafulchannel - pharmacy, delivery
+#deliverychannel - delivery, customer
+
+echo "Chaincode Installation & Instantiation for medlinechannel"
+. bins/set-context-v1.sh customer tls medlinechannel
+cd cc_order
+cc_install
+cd ..
+cc_instantiate
+peer chaincode lifecycle querycommitted -C $CC_CHANNEL_ID -n $CC_NAME
+
+. bins/set-context-v1.sh pharmacy tls medlinechannel
+cc_install
+cc_instantiate
+peer chaincode lifecycle querycommitted -C $CC_CHANNEL_ID -n $CC_NAME
+
+. bins/set-context-v1.sh delivery tls medlinechannel
+cc_install
+cc_instantiate
+peer chaincode lifecycle querycommitted -C $CC_CHANNEL_ID -n $CC_NAME
+
+echo "Chaincode Installation & Instantiation for prescverchannel"
+. bins/set-context-v1.sh hospital tls prescverchannel
+cd cc_ver
+cc_install
+cd ..
+cc_instantiate
+
+. bins/set-context-v1.sh pharmacy tls prescverchannel
+cc_install
+cc_instantiate
+
+. bins/set-context-v1.sh customer tls prescverchannel
+cc_install
+cc_instantiate
+
+echo "Chaincode Installation & Instantiation for pharmafulchannel"
+. bins/set-context-v1.sh pharmacy tls pharmafulchannel
+cd cc_fulfil
+cc_install
+cd ..
+cc_instantiate
+
+. bins/set-context-v1.sh delivery tls pharmafulchannel
+cc_install
+cc_instantiate
+
+echo "Chaincode Installation & Instantiation for deliverychannel"
+. bins/set-context-v1.sh delivery tls deliverychannel
+cd cc_del
+cc_install
+cd ..
+cc_instantiate
+
+. bins/set-context-v1.sh customer tls deliverychannel
+cc_install
+cc_instantiate
+
+# . bins/set-context.sh pharmacy tls
+
+# cc_install
+
+# cc_instantiate
+
+# peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+
+# . bins/set-context.sh customer tls
+
+# cc_install
+
+# cc_instantiate
+
+# peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+
+# . bins/set-context.sh delivery tls
+
+# cc_install
+
+# cc_instantiate
+
+# peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE

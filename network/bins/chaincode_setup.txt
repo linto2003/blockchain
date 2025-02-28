@@ -1,9 +1,9 @@
- export GOPATH=$HOME/go
+export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 source ~/.bashrc
-mkdir -p $GOPATH/src/github.com/linto/Project_new
-cd $GOPATH/src/github.com/linto/Project_new
-go mod init github.com/linto/Project_new
+mkdir -p $GOPATH/src/github.com/linto/Project/Project_new
+cd $GOPATH/src/github.com/linto/Project/Project_new
+go mod init github.com/linto/Project/Project_new
 go get github.com/hyperledger/fabric-chaincode-go/shim
 go get github.com/hyperledger/fabric-protos-go/peer
 
@@ -12,3 +12,10 @@ go get github.com/hyperledger/fabric-chaincode-go/shim
 go get github.com/hyperledger/fabric-protos-go/peer
 go mod tidy
 go build
+
+
+peer lifecycle chaincode package $CC2_PACKAGE_FOLDER/$CC_NAME_ver.$CC_VERSION-$INTERNAL_DEV_VERSION.tar.gz -p $CC_PATH \
+                    --label="gocc_ver.$CC_VERSION-$INTERNAL_DEV_VERSION" -l $CC_LANGUAGE
+
+
+ peer lifecycle chaincode package $CC2_PACKAGE_FOLDER/$CC_NAME_ver.$CC_VERSION-$INTERNAL_DEV_VERSION.tar.gz -p github.com/linto/Project/Project_new/network/chaincode_ver --label="gocc_ver.$CC_VERSION-$INTERNAL_DEV_VERSION" -l $CC_LANGUAGE

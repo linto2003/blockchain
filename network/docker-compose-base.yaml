@@ -12,6 +12,7 @@ volumes:
   data-peer1.pharmacy.com:
   data-peer1.delivery.com:
 
+
 services:
 
   # Orderer service
@@ -47,6 +48,10 @@ services:
       - FABRIC_LOGGING_SPEC=WARNING
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_medline
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.hospital.com:7051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb-peer1.hospital.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=user
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
     # Start the peer node
     command: peer node start
     # Host folder mappings
@@ -61,6 +66,7 @@ services:
       - data-peer1.hospital.com:/var/hyperledger/production
     depends_on: 
       - orderer.hospital.com
+      - couchdb-peer1.hospital.com
     # Map the ports on Host VM to container ports
     ports:
       - 7051:7051
@@ -68,7 +74,7 @@ services:
     networks:
       - medline
 
-  #  customer peer1
+  # Customer peer1
   peer1.customer.com:
     container_name: peer1.customer.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
@@ -83,6 +89,10 @@ services:
       - GOPATH=/opt/gopath
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_medline
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.customer.com:8051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb-peer1.customer.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=user
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
     # host file system mappings
     volumes:
       # Folder with channel create tx file
@@ -95,6 +105,7 @@ services:
       - data-peer1.customer.com:/var/hyperledger/production
     depends_on: 
       - orderer.hospital.com
+      - couchdb-peer1.customer.com
     # Map the ports on Host VM to container ports
     ports:
       - 8051:8051
@@ -102,6 +113,8 @@ services:
     networks:
       - medline
 
+
+  # Pharmacy peer1
   peer1.pharmacy.com:
     container_name: peer1.pharmacy.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
@@ -116,6 +129,10 @@ services:
       - GOPATH=/opt/gopath
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_medline
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.pharmacy.com:9051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb-peer1.pharmacy.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=user
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
     # host file system mappings
     volumes:
       # Folder with channel create tx file
@@ -128,13 +145,17 @@ services:
       - data-peer1.pharmacy.com:/var/hyperledger/production
     depends_on: 
       - orderer.hospital.com
+      - couchdb-peer1.pharmacy.com
     # Map the ports on Host VM to container ports
     ports:
       - 9051:9051
       - 9052:9052
     networks:
       - medline
-    
+
+
+
+  # Delivery peer1
   peer1.delivery.com:
     container_name: peer1.delivery.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
@@ -149,6 +170,10 @@ services:
       - GOPATH=/opt/gopath
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_medline
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.delivery.com:10051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb-peer1.delivery.com:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=user
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
     # host file system mappings
     volumes:
       # Folder with channel create tx file
@@ -161,12 +186,15 @@ services:
       - data-peer1.delivery.com:/var/hyperledger/production
     depends_on: 
       - orderer.hospital.com
+      - couchdb-peer1.delivery.com
     # Map the ports on Host VM to container ports
     ports:
       - 10051:10051
       - 10052:10052
     networks:
       - medline
+
+
 
   # Tools container used for managing peers
   tools:
@@ -198,5 +226,3 @@ services:
       - ${PWD}/tool-bins:/opt/scripts
     networks:
       - medline
-  
-  

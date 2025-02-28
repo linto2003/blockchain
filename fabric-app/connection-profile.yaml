@@ -1,6 +1,33 @@
 name: "fabric-network"
 version: "1.0.0"
 
+
+channels:
+  medlinechannel:
+    orderers:
+      - orderer.hospital.com
+    peers:
+      peer1.pharmacy.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.delivery.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.hospital.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.customer.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
 organizations:
   Pharmacy:
     mspid: PharmacyMSP
@@ -14,12 +41,16 @@ organizations:
     mspid: HospitalMSP
     peers:
       - peer1.hospital.com
+  Customer:
+    mspid: CustomerMSP
+    peers:
+      - peer1.customer.com
 
 peers:
   peer1.pharmacy.com:
     url: grpcs://peer1.pharmacy.com:9051
     tlsCACerts:
-      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/pharmacy.com/peers/peer1.pharmacy.com/tls/ca.crt
+      path: /home/linto/Project/Project_new/network/crypto-config/peerOrganizations/pharmacy.com/peers/peer1.pharmacy.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: peer1.pharmacy.com
       hostnameOverride: peer1.pharmacy.com
@@ -27,7 +58,7 @@ peers:
   peer1.delivery.com:
     url: grpcs://peer1.delivery.com:10051
     tlsCACerts:
-      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/delivery.com/peers/peer1.delivery.com/tls/ca.crt
+      path: /home/linto/Project/Project_new/network/crypto-config/peerOrganizations/delivery.com/peers/peer1.delivery.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: peer1.delivery.com
       hostnameOverride: peer1.delivery.com
@@ -35,16 +66,25 @@ peers:
   peer1.hospital.com:
     url: grpcs://peer1.hospital.com:7051
     tlsCACerts:
-      path: /home/linto/Project_new/network/crypto-config/peerOrganizations/hospital.com/peers/peer1.hospital.com/tls/ca.crt
+      path: /home/linto/Project/Project_new/network/crypto-config/peerOrganizations/hospital.com/peers/peer1.hospital.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: peer1.hospital.com
       hostnameOverride: peer1.hospital.com
+
+  peer1.customer.com:
+    url: grpcs://peer1.customer.com:8051
+    tlsCACerts:
+      path: /home/linto/Project/Project_new/network/crypto-config/peerOrganizations/customer.com/peers/peer1.customer.com/tls/ca.crt
+    grpcOptions:
+      ssl-target-name-override: peer1.customer.com
+      hostnameOverride: peer1.customer.com
+
 
 orderers:
   orderer.hospital.com:
     url: grpcs://orderer.hospital.com:7050
     tlsCACerts:
-      path: /home/linto/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/tls/ca.crt
+      path: /home/linto/Project/Project_new/network/crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/tls/ca.crt
     grpcOptions:
       ssl-target-name-override: orderer.hospital.com
       hostnameOverride: orderer.hospital.com

@@ -26,6 +26,7 @@ fi
 configtxgen -outputBlock  ./orderer/medlinegenesis.block -channelID ordererchannel  -profile MedlineOrdererGenesis
 
 
+
 echo    "====>Generating the channel create tx"
 configtxgen -outputCreateChannelTx  medlinechannel.tx -channelID medlinechannel  -profile MedlineChannel
 
@@ -41,8 +42,8 @@ echo    "====>Setting up anchor peers"
 if [ "$1" == "raft" ]; then
     sleep 5s
 fi
-
+sleep 5s
 ./bins/run-all.sh $1
 
 #bins/print.sh $1
-echo    "===Done===Execute tests with   ./test-all.sh   $1"
+# echo    "===Done===Execute tests with   ./test-all.sh   $1"

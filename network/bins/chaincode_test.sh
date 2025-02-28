@@ -86,9 +86,20 @@ function cc_instantiate {
 
 # EXECUTION CHAIN
 
-# . bins/set-context.sh hospital tls
 
-# cd chaincode
+
+. bins/set-context.sh hospital tls
+cd chaincode
+
+cc_install
+
+cd ..
+
+cc_instantiate
+
+peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+
+# . bins/set-context.sh pharmacy tls
 
 # cc_install
 
@@ -96,26 +107,18 @@ function cc_instantiate {
 
 # peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
 
-. bins/set-context.sh pharmacy tls
+# . bins/set-context.sh customer tls
 
-cc_install
+# cc_install
 
-cc_instantiate
+# cc_instantiate
 
-peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
 
-. bins/set-context.sh customer tls
+# . bins/set-context.sh delivery tls
 
-cc_install
+# cc_install
 
-cc_instantiate
+# cc_instantiate
 
-peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
-
-. bins/set-context.sh delivery tls
-
-cc_install
-
-cc_instantiate
-
-peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
+# peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["GetAllOrders"]}' --tls true --cafile $ORDERER_CA_ROOTFILE
